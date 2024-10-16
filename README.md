@@ -1,0 +1,2 @@
+# project_informatyczny
+project_informatycnzy
