@@ -69,6 +69,22 @@ def login():
 
     return jsonify({"message": "Login successful", "access_token": f'{access_token}'}), 200
 
+@user_bp.route('/profile', methods=['GET'])
+@token_required  # Используем декоратор для проверки токена
+def get_user_profile(user_id):
+    # Получаем пользователя по user_id
+    user = User.query.get(user_id)
+    if not user:
+        return jsonify({"error": "User not found"}), 404
+
+    # Возвращаем данные пользователя
+    return jsonify({
+        "email": user.email,
+        "firstname": user.firstname,
+        "lastname": user.lastname,
+        "phone": user.phone
+    }), 200
+
 @user_bp.route('/deposit', methods=['POST'])
 @token_required
 def deposit(user_id):
