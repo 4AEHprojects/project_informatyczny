@@ -1,0 +1,476 @@
+openapi: 3.0.0
+info:
+  title: User API
+  version: 1.0.0
+  description: API для управления пользователями, их кошельками и избранными валютами
+servers:
+  - url: http://localhost:5000
+    description: Локальный сервер разработки
+tags:
+  - name: user
+    description: operations with user
+  - name: transaction
+  - name: currency
+    description: Operations about user
+paths:
+  /user/register:
+    post:
+      tags:
+        - user
+      summary: Регистрация нового пользователя
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  format: email
+                firstname:
+                  type: string
+                lastname:
+                  type: string
+                phone:
+                  type: string
+                password:
+                  type: string
+                  format: password
+      responses:
+        '201':
+          description: Пользователь успешно зарегистрирован
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "User registered successfully"
+        '400':
+          description: Ошибка валидации данных
+        '409':
+          description: Пользователь с таким email уже существует
+
+  /user/login:
+    post:
+      tags:
+        - user
+      summary: Вход пользователя в систему
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+                  format: password
+      responses:
+        '200':
+          description: Успешный вход
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Login successful"
+                  access_token:
+                    type: string
+                    example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+        '400':
+          description: Ошибка валидации данных
+        '401':
+          description: Неверный email или пароль
+
+  /user/deposit:
+    post:
+      tags:
+       - user
+      summary: Пополнение кошелька
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                amount:
+                  type: number
+                  format: float
+      responses:
+        '200':
+          description: Успешное пополнение
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Successfully deposited 100.00 PLN"
+        '400':
+          description: Неверная сумма
+        '404':
+          description: Кошелек не найден
+
+  /user/wallet:
+    get:
+      tags:
+        - user
+      summary: Получение информации о кошельке пользователя
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Успешное получение данных
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties:
+                  type: string
+                  example: "100.00"
+        '404':
+          description: Кошельки не найдены
+
+  /user/favorites:
+    get:
+      tags:
+        - user
+      summary: Получение списка избранных валют
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Успешное получение данных
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  favorite_currencies:
+                    type: array
+                    items:
+                      type: string
+                    example: ["USD", "EUR"]
+    post:
+      summary: Добавление валюты в избранное
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                currency_code:
+                  type: string
+      responses:
+        '201':
+          description: Валюта успешно добавлена
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Currency added to favorites"
+        '400':
+          description: Валюта уже в избранном или не указан код валюты
+        '404':
+          description: Валюта не найдена
+
+  /user/favorites/{currency_code}:
+    delete:
+      tags:
+        - user
+      summary: Удаление валюты из избранного
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: currency_code
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Валюта успешно удалена
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Currency removed from favorites"
+        '404':
+          description: Валюта не найдена в избранном
+          
+  /transactions:
+    get:
+      tags:
+        - transaction
+      summary: Получить список всех транзакций пользователя
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Успешное получение списка транзакций
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                      example: 1
+                    currency_code:
+                      type: string
+                      example: "USD"
+                    amount:
+                      type: string
+                      example: "100.00"
+                    transaction_type:
+                      type: string
+                      example: "buy"
+                    timestamp:
+                      type: string
+                      format: date-time
+                      example: "2023-10-01T12:34:56Z"
+                    final_pln_balance:
+                      type: string
+                      example: "500.00"
+                    final_currency_balance:
+                      type: string
+                      example: "200.00"
+        '401':
+          description: Пользователь не авторизован
+
+  /transaction/buy:
+    post:
+      tags:
+        - transaction
+      summary: Покупка валюты
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                currency_code:
+                  type: string
+                  example: "USD"
+                amount:
+                  type: number
+                  format: float
+                  example: 100.0
+      responses:
+        '200':
+          description: Успешная покупка валюты
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Successfully bought 100.0 USD"
+                  final_pln_balance:
+                    type: string
+                    example: "500.00"
+                  final_currency_balance:
+                    type: string
+                    example: "200.00"
+                  selling_price:
+                    type: string
+                    example: "4.20"
+        '400':
+          description: Неверные данные или недостаточно средств
+        '401':
+          description: Пользователь не авторизован
+        '404':
+          description: Кошелек не найден
+
+  /transaction/sell:
+    post:
+      tags:
+        - transaction
+      summary: Продажа валюты
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                currency_code:
+                  type: string
+                  example: "USD"
+                amount:
+                  type: number
+                  format: float
+                  example: 100.0
+      responses:
+        '200':
+          description: Успешная продажа валюты
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Successfully sold 100.0 USD"
+                  final_pln_balance:
+                    type: string
+                    example: "500.00"
+                  final_currency_balance:
+                    type: string
+                    example: "200.00"
+                  buying_price:
+                    type: string
+                    example: "4.10"
+        '400':
+          description: Неверные данные или недостаточно средств
+        '401':
+          description: Пользователь не авторизован
+        '404':
+          description: Кошелек не найден
+          
+  /currency-rates:
+    get:
+      tags:
+        - currency
+      summary: Получить последние курсы всех валют
+      description: Возвращает последние курсы для всех валют.
+      responses:
+        '200':
+          description: Успешное получение курсов валют
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+                  properties:
+                    code:
+                      type: string
+                      example: "USD"
+                    ask:
+                      type: number
+                      format: float
+                      example: 4.20
+                    bid:
+                      type: number
+                      format: float
+                      example: 4.10
+                    effective_date:
+                      type: string
+                      format: date-time
+                      example: "2023-10-01T12:34:56Z"
+        '500':
+          description: Внутренняя ошибка сервера
+
+  /delete-old-currency-rates:
+    delete:
+      tags:
+        - currency
+      summary: Удалить старые курсы валют
+      description: Удаляет все курсы валют, у которых нет записи на указанную дату (по умолчанию 2025-02-04).
+      responses:
+        '200':
+          description: Успешное удаление старых курсов
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Удалено 10 старых курсов валют без записи на 2025-02-04"
+        '500':
+          description: Внутренняя ошибка сервера
+
+  /currency-rates/{currency_code}:
+    get:
+      tags:
+        - currency
+      summary: Получить курсы валюты по коду
+      description: Возвращает курсы валюты за указанный период (по умолчанию за последние 7 дней).
+      parameters:
+        - name: currency_code
+          in: path
+          required: true
+          schema:
+            type: string
+          example: "USD"
+        - name: start_date
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date
+          example: "2025-01-01"
+        - name: end_date
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date
+          example: "2025-01-07"
+      responses:
+        '200':
+          description: Успешное получение курсов валюты
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    code:
+                      type: string
+                      example: "USD"
+                    ask:
+                      type: number
+                      format: float
+                      example: 4.20
+                    bid:
+                      type: number
+                      format: float
+                      example: 4.10
+                    effective_date:
+                      type: string
+                      format: date-time
+                      example: "2023-10-01T12:34:56Z"
+        '400':
+          description: Некорректный формат даты
+        '500':
+          description: Внутренняя ошибка сервера
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
