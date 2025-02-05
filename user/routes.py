@@ -4,7 +4,7 @@ from decimal import Decimal
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
 
-from app.extension import db
+from application.extension import db
 from auth.jwt import generate_jwt, decode_jwt, token_required
 from currency.models import CurrencyRate
 from user.models import User, Wallet, UserFavoriteCurrency

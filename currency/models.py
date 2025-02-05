@@ -1,4 +1,4 @@
-from app.extension import db
+from application.extension import db
 
 class CurrencyRate(db.Model):
     """Store currency exchange rates"""

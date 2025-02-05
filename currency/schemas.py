@@ -1,5 +1,5 @@
 from marshmallow import Schema, fields
-from app.extension import ma
+from application.extension import ma
 from currency.models import CurrencyRate
 
 

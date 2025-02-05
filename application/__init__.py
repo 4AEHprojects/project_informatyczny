@@ -1,13 +1,10 @@
 from datetime import timedelta
-from locale import currency
 
-import flask_migrate
 from flask import Flask
 from flask_cors import CORS
 from flask_jwt_extended import JWTManager
-from flask_migrate import Migrate
 
-from app.extension import db
+from application.extension import db
 from currency.routes import currency_bp
 from transaction.routes import transaction_bp
 from user.routes import user_bp  # Импортируем Blueprint
@@ -43,7 +40,7 @@ def create_app():
 
     return app
 
-from app.extension import db
+from application.extension import db
 
 def start_app():
     app = create_app()

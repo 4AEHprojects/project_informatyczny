@@ -1,6 +1,6 @@
 from marshmallow import fields, validate
 
-from app.extension import ma
+from application.extension import ma
 from user.models import User
 
 

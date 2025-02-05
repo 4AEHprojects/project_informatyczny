@@ -1,5 +1,5 @@
 from sqlalchemy import func
-from app.extension import db
+from application.extension import db
 from currency.models import CurrencyRate
 from marshmallow import ValidationError
 from flask import jsonify

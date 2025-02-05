@@ -1,11 +1,11 @@
-# app/routes/transaction_routes.py
+# application/routes/transaction_routes.py
 from decimal import Decimal
 
 from flask import Blueprint, jsonify, request
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from werkzeug.routing import ValidationError
 
-from app.extension import db
+from application.extension import db
 from auth.jwt import token_required
 from currency.currency_service import get_latest_currency_by_code
 from transaction.models import Transaction

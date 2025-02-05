@@ -3,7 +3,7 @@ from decimal import Decimal
 from passlib.hash import bcrypt
 from sqlalchemy import Numeric
 
-from app.extension import db
+from application.extension import db
 
 
 class User(db.Model):

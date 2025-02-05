@@ -6,7 +6,7 @@ from sqlalchemy.orm import aliased
 from werkzeug.exceptions import BadRequest
 
 from currency.models import CurrencyRate
-from app import db
+from application import db
 from marshmallow import ValidationError
 
 from currency.schemas import CurrencySchema

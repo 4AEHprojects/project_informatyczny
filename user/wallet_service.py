@@ -1,6 +1,6 @@
-# app/services/wallet_service.py
+# application/services/wallet_service.py
 
-from app.extension import db
+from application.extension import db
 from user.models import Wallet
 from decimal import Decimal
 
