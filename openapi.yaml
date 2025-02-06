@@ -143,6 +143,62 @@ paths:
         '404':
           description: Кошельки не найдены
 
+  /user/withdraw:
+    post:
+      tags:
+        - user
+      summary: Снятие средств
+      security:
+        - bearerAuth: [ ]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                amount:
+                  type: number
+                  format: float
+                  example: 50.00
+                currency_code:
+                  type: string
+                  example: "PLN"
+              required:
+                - amount
+      responses:
+        '200':
+          description: Успешное снятие средств
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Successfully withdrew 50.00 PLN"
+        '400':
+          description: Ошибка валидации или недостаточно средств
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Invalid amount"
+        '404':
+          description: Кошелёк не найден
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Wallet not found"
+
+
   /user/favorites:
     get:
       tags:

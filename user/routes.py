@@ -91,21 +91,25 @@ def deposit(user_id):
     """Пополнение кошелька"""
     data = request.get_json()
     amount = data.get("amount")
+    currency_code = data.get("currency_code", "PLN")
 
     if not amount or amount <= 0:
         return jsonify({"error": "Invalid amount"}), 400
 
+    if not isinstance(currency_code, str) or len(currency_code) < 3:
+        return jsonify({"error": "Invalid currency code"}), 400
+
     try:
         # Только PLN
-        wallet = Wallet.query.filter_by(user_id=user_id, currency_code="PLN").first()
+        wallet = Wallet.query.filter_by(user_id=user_id, currency_code=currency_code).first()
         if not wallet:
-            wallet = Wallet(user_id=user_id, currency_code="PLN", balance=Decimal('0.00'))
+            wallet = Wallet(user_id=user_id, currency_code=currency_code, balance=Decimal('0.00'))
             db.session.add(wallet)
 
         wallet.deposit(amount)
         db.session.commit()
 
-        return jsonify({"message": f"Successfully deposited {amount} PLN"}), 200
+        return jsonify({"message": f"Successfully deposited {amount} {currency_code}"}), 200
 
     except ValueError as e:
         return jsonify({"error": str(e)}), 400
@@ -117,20 +121,24 @@ def withdraw(user_id):
     """Снятие средств"""
     data = request.get_json()
     amount = data.get("amount")
+    currency_code = data.get("currency_code", "PLN")
 
     if not amount or amount <= 0:
         return jsonify({"error": "Invalid amount"}), 400
 
+    if not isinstance(currency_code, str) or len(currency_code) < 3:
+        return jsonify({"error": "Invalid currency code"}), 400
+
+
     try:
-        # Только PLN
-        wallet = Wallet.query.filter_by(user_id=user_id, currency_code="PLN").first()
+        wallet = Wallet.query.filter_by(user_id=user_id, currency_code=currency_code).first()
         if not wallet:
             return jsonify({"error": "Wallet not found"}), 404
 
         wallet.withdraw(amount)
         db.session.commit()
 
-        return jsonify({"message": f"Successfully withdrew {amount} PLN"}), 200
+        return jsonify({"message": f"Successfully withdrew {amount} {currency_code}"}), 200
 
     except ValueError as e:
         return jsonify({"error": str(e)}), 400

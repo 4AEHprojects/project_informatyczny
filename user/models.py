@@ -49,20 +49,32 @@ class UserFavoriteCurrency(db.Model):
 class Wallet(db.Model):
     __tablename__ = "wallets"
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), primary_key=True)
-    currency_code = db.Column(db.String(3), primary_key=True)
-    balance = db.Column(Numeric(precision=20, scale=4), default=Decimal('0.00'))
+    currency_code = db.Column(db.String(9), primary_key=True)
+    balance = db.Column(Numeric(precision=20, scale=4), default=Decimal('0.00'), server_default='0.0000')
     user = db.relationship('User', back_populates='wallet')
 
     def deposit(self, amount):
         """Пополнение кошелька"""
+        try:
+            amount = Decimal(amount)
+        except (ValueError, TypeError):
+            raise ValueError("Invalid amount format")
+
         if amount <= 0:
             raise ValueError("Amount must be positive")
-        self.balance += Decimal(amount)
+
+        self.balance += amount
 
     def withdraw(self, amount):
         """Снятие средств"""
+        try:
+            amount = Decimal(amount)
+        except (ValueError, TypeError):
+            raise ValueError("Invalid amount format")
+
         if amount <= 0:
             raise ValueError("Amount must be positive")
-        if self.balance < Decimal(amount):
+        if self.balance < amount:
             raise ValueError("Insufficient balance")
-        self.balance -= Decimal(amount)
+
+        self.balance -= amount

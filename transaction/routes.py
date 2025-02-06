@@ -81,6 +81,7 @@ def buy_currency(user_id):
             currency_code=currency_code,
             amount=Decimal(amount),
             transaction_type="buy",
+            price=Decimal(selling_price),  # Сколько тратили злотых за 1 валюту
             final_pln_balance=pln_wallet.balance,
             final_currency_balance=currency_wallet.balance
         )
@@ -142,6 +143,7 @@ def sell_currency(user_id):
             currency_code=currency_code,
             amount=Decimal(amount),
             transaction_type="sell",
+            price=Decimal(buying_price), # Сколько злотых получали за единицу валюты
             final_pln_balance=pln_wallet.balance,
             final_currency_balance=currency_wallet.balance
         )
