@@ -29,6 +29,7 @@ def get_transactions(user_id):
             "amount": str(txn.amount),  # Конвертируем Decimal в строку
             "transaction_type": txn.transaction_type,
             "timestamp": txn.timestamp,
+            "price": txn.price,
             "final_pln_balance": str(txn.final_pln_balance),
             "final_currency_balance": str(txn.final_currency_balance)
         } for txn in transactions

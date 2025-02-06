@@ -34,9 +34,9 @@ def create_app():
     from user.models import UserFavoriteCurrency
 
     # Регистрация Blueprint
-    app.register_blueprint(user_bp, url_prefix='/user')
-    app.register_blueprint(currency_bp, url_prefix='/currency')
-    app.register_blueprint(transaction_bp, url_prefix='/transactions')
+    app.register_blueprint(user_bp, url_prefix='/api/user')
+    app.register_blueprint(currency_bp, url_prefix='/api/currency')
+    app.register_blueprint(transaction_bp, url_prefix='/api/transactions')
 
     return app
 
