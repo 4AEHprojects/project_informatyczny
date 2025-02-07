@@ -13,7 +13,7 @@ This is a simple Flask application.
 1. Clone the repository:
 
    ```sh
-   git clone https://github.com/your-repo/flask-app.git
+   git clone https://github.com/RealFinanceAEH/RealFinanceBackend
    cd flask-app
    
 2. run project
